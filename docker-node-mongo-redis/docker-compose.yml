@@ -1,0 +1,46 @@
+version: "3.4"
+
+services:
+  app:
+    image: learning-docker/docker-node-mongo-redis:v1
+    volumes:
+      - ./:/app # mount từ môi trường gốc vào trong để nếu các bạn thay đổi code thì bên trong sẽ tự động cập nhật
+    environment: # phần này ta định nghĩa ở file .env nhé
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - PORT=${PORT}
+    ports:
+      - "${PORT}:${PORT}" # phần này ta định nghĩa ở file .env nhé
+    restart: unless-stopped
+    depends_on:
+        - redis
+        - db
+  
+  db:
+    image: mongo
+    volumes:
+      - sharedb:/data/db
+    restart: unless-stopped
+  
+  redis:
+    image: redis:5-alpine
+    volumes:
+      - .docker/data/redis:/data
+    restart: unless-stopped
+
+volumes:
+    sharedb:
+ 
+
+
+# ậy làm thế nào có thể chạy được npm install môi trường gốc
+# docker run --rm -v $(pwd):/app -w /app node:13-alpine npm install => linux
+# docker run --rm -v D:\Tadidi\learning-docker\docker-node-mongo-redis:/app -w /app node npm install => window
+#Command trên sẽ tạo ra 1 container tạm thời từ image node:13-alpine, chạy npm install và mount trực tiếp file ra môi trường ngoài, 
+#kết qủa là khi command kia chạy xong thì môi trường ngoài của ta sẽ có node_modules. 
+
+
+
+

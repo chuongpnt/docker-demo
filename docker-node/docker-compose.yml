@@ -1,0 +1,25 @@
+# version của docker compose 
+version: "3.7"
+
+services:
+  app:
+    image: learning-docker/node:v2
+    #bên trái là môi trường gốc (bên ngoài), bên phải là cổng của container ,nodejs là cổng 3000 nên có thể thay đổi 3001:3000
+    ports:
+      - "3000:3000"
+    # unless-stopped là tự động chạy service này trong mọi trường hợp
+    restart: unless-stopped
+
+# tạo container:
+  # docker-compose down
+  # docker-compose up
+# vào docker:
+  # docker-compose exec app sh
+# liệt kê file :
+  # ls -l
+# delete folder :
+  # rm -rf vendor/
+# exit docker container:
+  # exit 
+# check os:
+  # docker-compose exec app cat /etc/os-release

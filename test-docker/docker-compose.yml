@@ -1,0 +1,12 @@
+version: "3.4"
+
+services:
+  app:
+    # đổi tên image ở đây cho đúng với của bạn (không nói gì về tag thì mặc định là 'latest')
+    # neu co loi logn : docker login registry.gitlab.com
+    image: registry.gitlab.com/chuongpnt/learning-docker 
+    ports:
+      - "${PUBLIC_PORT}:${PORT}"
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT}

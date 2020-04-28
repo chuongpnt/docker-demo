@@ -1,0 +1,50 @@
+version: '3.4'
+services:
+
+  #PHP Service
+  app:
+    image: learning-docker/laravel:v1
+    restart: unless-stopped
+    #ở service app mình có mount (hay hiểu đơn giản hơn đó là ánh xạ) 1 volume từ folder hiện tại vào bên trong container ở đường dẫn /var/www/html
+    volumes:
+      - ./:/var/www/html
+
+  #Nginx Service
+  webserver:
+    image: nginx:1.17-alpine
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+
+
+
+#dòng fastcgi_pass app:9000;: khi có request gửi đến nginx, nginx sẽ chuyển request đó tới PHP-FPM đang lắng nghe ở host tên là app và port 9000
+# app: là địa chỉ của service app tên này sẽ phải trùng khớp với tên của service ta định nghĩa ở file docker-compose
+# 9000: Dockerfile bên trên đoạn cuối chúng ta có vọc thử image php:7.2-fpm-alpine và thấy có đoạn EXPOSE 9000
+# EXPOSE 9000 nhằm mục đích muốn nói là: tôi chấp nhận cho container khác giao tiếp với tôi ở port 9000
+
+# Mapping Port nhằm giúp thế giới bên ngoài giao tiếp được với container
+# EXPOSE PORT nhằm giúp các container có thể giao tiếp được với nhau, ở trên webserver sẽ cần phải gửi request tới app, 
+# nên app phải expose port 9000, nhưng webserver không cần expose vì chẳng có ai gọi đến nó cả.
+# Ở thế giới bên ngoài sẽ không gọi được vào service app ở port 9000 nhưng webserver thì có thể nhé 
+
+
+# không chạy composer install ngay lúc build image  oàn bộ file từ bên ngoài sẽ được ghi đè vào bên trong container, 
+# dẫn tới việc folder vendor (do composer install mà có) sẽ bị biến mất trong container, vì ở môi trường ngoài ta đâu có vendor
+
+# chạy composer nhưng vẫn phải bật docker-compose up:
+     # docker-compose exec app composer install
+# vào docker:
+  # docker-compose exec app sh
+# liệt kê file :
+  # ls -l
+# delete folder :
+  # rm -rf vendor/
+# exit docker container:
+  # exit 
+# check os:
+  # docker-compose exec app cat /etc/os-release
+     
